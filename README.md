@@ -6,7 +6,8 @@ Takes an HTML file path and generates a string of modified markup. Any small ext
 
 This reduces the number of HTTP requests in return for inflating your HTML. It's up to you to decide whether this is a good trade-off in your situation, and to configure this module optimally.
 
-### Usage
+
+## Usage
 
     npm install resource-embedder
 
@@ -20,7 +21,7 @@ embedder.get(function (markup) {
 });
 ```
 
-## Choosing which files to embed
+### Choosing which files to embed
 
 By default, **any scripts or stylesheets below 5KB in size** will be embedded. You can change this setting in the options.
 
@@ -47,8 +48,7 @@ To embed a particular resource only if it is below a certain size, specify the m
 <link rel="stylesheet" href="foo.css" data-embed="5KB">
 ```
 
-
-## Options
+### Options
 
 To specify options:
 
