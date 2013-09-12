@@ -33,13 +33,14 @@ module.exports = class ResourceEmbedder
     # Normalise arguments
     if typeof _options is 'string'
       htmlFile = arguments[0]
-      _options = arguments[1]
+      _options = arguments[1] || {}
       _options.htmlFile = htmlFile
     
     # Build options
     @options = _.extend {}, defaultOptions, _options
     if not @options.assetRoot
       @options.assetRoot = path.dirname(@options.htmlFile) unless @options.assetRoot?
+    @options.assetRoot = path.resolve @options.assetRoot
     if typeof @options.threshold isnt 'number'
       @options.threshold = parseFileSize @options.threshold
 
@@ -57,7 +58,7 @@ module.exports = class ResourceEmbedder
           switch tagName
             when 'script'
               if @options.scripts && attributes.src?
-                scriptPath = path.join(@options.assetRoot, attributes.src)
+                scriptPath = path.resolve path.join(@options.assetRoot, attributes.src)
                 if shouldBeEmbedded scriptPath, attributes['data-embed'], @options
                   nextResource =
                     type: 'script'
@@ -66,7 +67,7 @@ module.exports = class ResourceEmbedder
                     body: fs.readFileSync(scriptPath).toString().trim()
             when 'link'
               if @options.stylesheets && attributes.rel == 'stylesheet' && attributes.href?
-                linkPath = path.join(@options.assetRoot, attributes.href)
+                linkPath = path.resolve path.join(@options.assetRoot, attributes.href)
                 if shouldBeEmbedded linkPath, attributes['data-embed'], @options
                   nextResource =
                     type: 'style'
