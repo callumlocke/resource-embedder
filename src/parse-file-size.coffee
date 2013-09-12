@@ -5,14 +5,13 @@ multipliers =
   bytes: 1
 
 module.exports = (str) ->
-
   number = str.match(/^[0-9\.]+/)
   if !number? or !number.length
     throw new Error "Number not found in string: #{str}"
+  number = number[0]
 
   unit = str.substring(number.length).trim()
-
-  if unit.length is 0
+  if unit is ''
     return +number
 
   if not multipliers[unit]? or (+number != +(+number).toString())

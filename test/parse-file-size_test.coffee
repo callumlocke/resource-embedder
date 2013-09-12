@@ -4,8 +4,8 @@ exports['parse-file-size'] = (test) ->
   test.expect 9
 
   test.equal parseFileSize('5KB'), 5120
-  test.equal parseFileSize('5kb'), 5120
-  test.equal parseFileSize('5 kb'), 5120
+  test.equal parseFileSize('25kb'), 25600
+  test.equal parseFileSize('10 kb'), 10240
   test.equal parseFileSize('1.46484KB'), 1500
   test.equal parseFileSize('256b'), 256
   test.equal parseFileSize('256 bytes'), 256
