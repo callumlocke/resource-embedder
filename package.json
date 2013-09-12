@@ -5,11 +5,12 @@
   "homepage": "https://github.com/callumlocke/resource-embedder",
   "bugs": "https://github.com/callumlocke/resource-embedder/issues",
   "author": {
-    "name": "Callum Locke"
+    "name": "Callum Locke",
+    "url": "https://github.com/callumlocke"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/callumlocke/resource-embedder"
+    "url": "https://github.com/callumlocke/resource-embedder.git"
   },
   "licenses": [
     {

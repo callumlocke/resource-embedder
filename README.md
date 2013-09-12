@@ -6,6 +6,7 @@ Takes an HTML file path and generates a string of modified markup. Any small ext
 
 This reduces the number of HTTP requests in return for inflating your HTML. It's up to you to decide whether this is a good trade-off in your situation, and to configure this module optimally.
 
+**Also available as a Grunt plugin: [grunt-embed](https://github.com/callumlocke/grunt-embed)**
 
 ## Usage
 
