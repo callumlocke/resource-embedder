@@ -67,6 +67,12 @@ To specify options:
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Test your code using [Grunt](http://gruntjs.com/).
 
+### Tasks
+
+When you're working on a specific module in `src`, e.g. `parse-file-size.coffee`, first run `grunt watch:parse-file-size` in a terminal and keep the window open. Then open `src/parse-file-size.coffee` and `test/parse-file-size_test.coffee` and work on them side-by-side. New test results will appear in the terminal whenever you save either file.
+
+You can also just do `grunt watch` to watch all modules at once and run all test files whenever anything changes.
+
 
 ## Release History
 _(Nothing yet)_

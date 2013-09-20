@@ -25,7 +25,8 @@
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-cli": "~0.1.9",
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+    "sugar": "~1.4.1"
   },
   "dependencies": {
     "coffee-script": "~1.6.3",
