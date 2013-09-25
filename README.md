@@ -65,6 +65,7 @@ To specify options:
 
 
 ## Contributing
+
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Test your code using [Grunt](http://gruntjs.com/).
 
 ### Tasks
@@ -75,10 +76,12 @@ You can also just do `grunt watch` to watch all modules at once and run all test
 
 
 ## Release History
+
 _(Nothing yet)_
 
 
 ## License
+
 Copyright (c) 2013 Callum Locke. Licensed under the MIT license.
 
 

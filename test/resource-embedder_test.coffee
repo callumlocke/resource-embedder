@@ -7,12 +7,13 @@ outputFilePath = path.resolve(path.join(__dirname, 'fixtures/expected.html'))
 correctOutput = fs.readFileSync(outputFilePath).toString()
 
 exports['resource-embedder'] = (test) ->
-  test.expect 1
+  test.expect 2
 
   embedder = new ResourceEmbedder
     htmlFile: inputFilePath
 
-  embedder.get (result) ->
-    test.equal result, correctOutput, 'result should match output.html.'
+  embedder.get (result, warnings) ->
     fs.writeFileSync path.join(__dirname, '../test-output.html'), result
+    test.ok result is correctOutput, 'resulting markup should match output.html.'
+    test.strictEqual warnings.length, 2
     test.done()

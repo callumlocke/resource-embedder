@@ -1,32 +1,19 @@
 fs = require 'graceful-fs'
 path = require 'path'
 htmlparser = require 'htmlparser2'
-_ = require 'lodash'
+assign = require('lodash').assign
+Resource = require './resource'
+getLineIndent = require './get-line-indent'
+parseFileSize = require './parse-file-size'
 
-defaultOptions =
+defaults =
   threshold: '5KB'
   stylesheets: true
   scripts: true
 
-getLineIndent = require './get-line-indent'
-parseFileSize = require './parse-file-size'
-
 indentEachLine = (str, indent) ->
   lines = str.split '\n'
   indent + lines.join "\n#{indent}"
-
-shouldBeEmbedded = (path, dataEmbed, options) ->
-  switch dataEmbed
-    when 'false', '0'
-      return false
-    when ''
-      return true
-    when null, undefined
-      maxFileSize = options.threshold
-    else
-      maxFileSize = parseFileSize dataEmbed
-  fs.statSync(path).size < maxFileSize
-
 
 module.exports = class ResourceEmbedder
   constructor: (_options) ->
@@ -37,7 +24,7 @@ module.exports = class ResourceEmbedder
       _options.htmlFile = htmlFile
     
     # Build options
-    @options = _.extend {}, defaultOptions, _options
+    @options = assign {}, defaults, _options
     if not @options.assetRoot
       @options.assetRoot = path.dirname(@options.htmlFile) unless @options.assetRoot?
     @options.assetRoot = path.resolve @options.assetRoot
@@ -49,62 +36,73 @@ module.exports = class ResourceEmbedder
       throw err if err
 
       inputMarkup = inputMarkup.toString()
+      embeddableResources = {}
+      tagCounter = 1
+      finished = false
+      warnings = []
 
-      # Build array of resources as scripts and links are encountered during parse
-      resources = []
-      nextResource = null
+      doEmbedding = ->
+        for own k, er of embeddableResources
+          return if !er.body? || !er.elementEndIndex?
+
+        outputMarkup = ''
+        index = 0
+        for own k, er of embeddableResources
+          er.body = er.body.toString()
+
+          multiline = (er.body.indexOf('\n') isnt -1)
+          if multiline
+            indent = getLineIndent er.elementStartIndex, inputMarkup
+          else indent = ''
+
+          body = (if indent.length then indentEachLine(er.body, indent) else er.body)
+
+          outputMarkup += (
+            inputMarkup.substring(index, er.elementStartIndex) +
+            "<#{er.type}>" +
+            (if multiline then '\n' else '') +
+            body +
+            (if multiline then '\n' else '') +
+            indent + "</#{er.type}>"
+          )
+          index = er.elementEndIndex + 1
+        outputMarkup += inputMarkup.substring index
+
+        callback outputMarkup, (if warnings.length then warnings else null)
+
       parser = new htmlparser.Parser
         onopentag: (tagName, attributes) =>
-          switch tagName
-            when 'script'
-              if @options.scripts && attributes.src?
-                scriptPath = path.resolve path.join(@options.assetRoot, attributes.src)
-                if shouldBeEmbedded scriptPath, attributes['data-embed'], @options
-                  nextResource =
-                    type: 'script'
-                    elementStartIndex: parser.startIndex
-                    path: scriptPath
-                    body: fs.readFileSync(scriptPath).toString().trim()
-            when 'link'
-              if @options.stylesheets && attributes.rel == 'stylesheet' && attributes.href?
-                linkPath = path.resolve path.join(@options.assetRoot, attributes.href)
-                if shouldBeEmbedded linkPath, attributes['data-embed'], @options
-                  nextResource =
-                    type: 'style'
-                    elementStartIndex: parser.startIndex
-                    path: linkPath
-                    body: fs.readFileSync(linkPath).toString().trim()
+          tagCounter++
+          thisTagId = tagCounter
+          startIndexOfThisTag = parser.startIndex
+          resource = new Resource tagName, attributes, @options
+          resource.isEmbeddable (embed) =>
+            if embed
+              if !embeddableResources[thisTagId]?
+                embeddableResources[thisTagId] = {}
+              er = embeddableResources[thisTagId]
+              er.body = resource.contents
+              er.type = (if tagName is 'script' then 'script' else 'style')
+              er.path = path.resolve path.join(@options.assetRoot, resource.target)
+              er.elementStartIndex = startIndexOfThisTag
+            else
+              warnings.push resource.warning if resource.warning?
+              process.nextTick -> delete embeddableResources[thisTagId]
+            if finished
+              process.nextTick doEmbedding
 
         onclosetag: (tagName) ->
-          if nextResource?
-            nextResource.elementEndIndex = parser.endIndex
-            resources.push nextResource
-            nextResource = null
+          switch tagName
+            when 'script', 'link'
+              if !embeddableResources[tagCounter]?
+                embeddableResources[tagCounter] = {}
+              er = embeddableResources[tagCounter]
+              er.elementEndIndex = parser.endIndex
+          if finished
+            throw new Error 'Should never happen!'
+
+        onend: ->
+          finished = true
 
       parser.write(inputMarkup)
       parser.end()
-
-      # Build output markup string
-      outputMarkup = ''
-
-      index = 0
-      for resource in resources
-        multiline = (resource.body.indexOf('\n') isnt -1)
-        if multiline
-          indent = getLineIndent resource.elementStartIndex, inputMarkup
-        else indent = ''
-
-        body = (if indent.length then indentEachLine(resource.body, indent) else resource.body)
-
-        outputMarkup += (
-          inputMarkup.substring(index, resource.elementStartIndex) +
-          "<#{resource.type}>" +
-          (if multiline then '\n' else '') +
-          body +
-          (if multiline then '\n' else '') +
-          indent + "</#{resource.type}>"
-        )
-        index = resource.elementEndIndex + 1
-      outputMarkup += inputMarkup.substring index
-
-      callback outputMarkup

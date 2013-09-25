@@ -1,0 +1,10 @@
+.some-class {
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+    src='images/test.jpg',
+    sizingMethod='scale'
+  );
+  background-image: url('../images/foo.png');
+}
+.another-class {
+  background-image: url(more-images/bar.jpg?12345);
+}
