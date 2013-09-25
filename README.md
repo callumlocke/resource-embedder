@@ -1,5 +1,7 @@
 # resource-embedder [![Build Status](https://secure.travis-ci.org/callumlocke/resource-embedder.png?branch=master)](http://travis-ci.org/callumlocke/resource-embedder)
 
+> Not ready for production use yet! (See [issues](https://github.com/callumlocke/resource-embedder/issues).) Wait till 0.1.x.
+
 Node module for automatically embedding the contents of external scripts and stylesheets into HTML markup.
 
 Takes an HTML file path and generates a string of modified markup. Any small external scripts and stylesheets are replaced with inline `<script>...</script>` or `<style>...</style>` elements.
