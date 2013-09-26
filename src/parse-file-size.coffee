@@ -1,3 +1,11 @@
+###
+  resource-embedder
+  https://github.com/callumlocke/resource-embedder
+
+  Copyright 2013 Callum Locke
+  Licensed under the MIT license.
+###
+
 multipliers =
   kb: 1024
   KB: 1024

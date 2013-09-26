@@ -4,15 +4,63 @@
   <!-- this file is deliberately messy to test indentation preservation... -->
 
   <style>
-  .some-class {
+  @font-face {
+    font-family: 'coool';
+    font-style: normal;
+    font-weight: 400;
+    src: url(styles/fonts/coool.woff) format('woff');
+  }
+  
+  .something {
+    /* filter src should NOT be converted, as it's supposed to be relative to the document already */
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
-      src='styles/images/test.jpg',
+      src='images/test.jpg',
       sizingMethod='scale'
     );
+  
     background-image: url('images/foo.png');
+    background-image: url('images/bar.png?12345');
+    background-image: url(images/foo.png) ;
+    background-image: url( images/bar.png  );
+    background-image: url(  
+      images/bar.png
+         );
   }
-  .another-class {
+  
+  .another-thing {
     background-image: url(styles/more-images/bar.jpg?12345);
+    background-image: url( styles/more-images/bar.jpg?12345 );
+    background-image: url( 'styles/more-images/bar.jpg' );
+    background-image: url(
+      styles/more-images/bar.jpg   
+    );
+    background-image  : url(styles/images/thing.jpg)  ;
+  }
+  
+  .other-things {
+    background-image: url(data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);
+    background-image: url( data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw== );
+  }
+  
+  .moar-things {
+    background-image: url(/styles/more-images/thing.jpg);
+    background-image: url(http://i.imgur.com/C5XQm.gif);
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+      src='http://example.com/images/test.jpg',
+      sizingMethod='scale'
+    );
+  }
+  
+  *, *:before, *:after {
+    box-sizing: border-box;
+    /* urls in IE's 'behavior' property should NOT be converted as it's already relative to the document... */
+    
+    /* without hack */
+    behavior: url(scripts/boxsizing.htc);
+    behavior  : url(  scripts/boxsizing.htc  );
+    
+    /* with IE<8 hack */
+    *behavior: url(scripts/boxsizing.htc);
   }
   </style>
 
@@ -42,11 +90,13 @@
 <body>
 
 <script src="scripts/non-existent.js" data-embed="1"></script>
-<script>console.log('A tiny one-line script');</script>
+  
+  <script src="scripts/log.js" defer></script>
+  <script>console.log('A tiny one-line script');</script>
+  <script src="scripts/log.js" async></script>
 
 <p>Some content here.</p>
 
-    <script>console.log('A tiny one-line script');</script>
       <script>
       window.matchMedia=window.matchMedia||function(a){"use strict";var c,d=a.documentElement,e=d.firstElementChild||d.firstChild,f=a.createElement("body"),g=a.createElement("div");return g.id="mq-test-1",g.style.cssText="position:absolute;top:-100em",f.style.background="none",f.appendChild(g),function(a){return g.innerHTML='&shy;<style media="'+a+'"> #mq-test-1 { width: 42px; }</style>',d.insertBefore(f,e),c=42===g.offsetWidth,d.removeChild(f),{matches:c,media:a}}}(document);
       alert('hi');

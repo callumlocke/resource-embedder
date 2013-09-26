@@ -9,6 +9,8 @@ posOptions =
 potentiallyEmbeddable = Resource::potentiallyEmbeddable
 getThreshold = Resource::getThreshold
 convertCSSResources = Resource::convertCSSResources
+isLocalPath = Resource::isLocalPath
+getByteLength = Resource::getByteLength
 
 module.exports =
   'Resource':
@@ -121,18 +123,66 @@ module.exports =
           'styles'
         )
         t.strictEqual result, """
-        .some-class {
-          filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
-            src='styles/images/test.jpg',
-            sizingMethod='scale'
-          );
-          background-image: url('images/foo.png');
-        }
-        .another-class {
-          background-image: url(styles/more-images/bar.jpg?12345);
-        }
+          @font-face {
+            font-family: 'coool';
+            font-style: normal;
+            font-weight: 400;
+            src: url(styles/fonts/coool.woff) format('woff');
+          }
+          
+          .something {
+            /* filter src should NOT be converted, as it's supposed to be relative to the document already */
+            filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+              src='images/test.jpg',
+              sizingMethod='scale'
+            );
+          
+            background-image: url('images/foo.png');
+            background-image: url('images/bar.png?12345');
+            background-image: url(images/foo.png) ;
+            background-image: url( images/bar.png  );
+            background-image: url(  
+              images/bar.png
+                 );
+          }
+          
+          .another-thing {
+            background-image: url(styles/more-images/bar.jpg?12345);
+            background-image: url( styles/more-images/bar.jpg?12345 );
+            background-image: url( 'styles/more-images/bar.jpg' );
+            background-image: url(
+              styles/more-images/bar.jpg   
+            );
+            background-image  : url(styles/images/thing.jpg)  ;
+          }
+          
+          .other-things {
+            background-image: url(data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);
+            background-image: url( data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw== );
+          }
+          
+          .moar-things {
+            background-image: url(/styles/more-images/thing.jpg);
+            background-image: url(http://i.imgur.com/C5XQm.gif);
+            filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+              src='http://example.com/images/test.jpg',
+              sizingMethod='scale'
+            );
+          }
+          
+          *, *:before, *:after {
+            box-sizing: border-box;
+            /* urls in IE's 'behavior' property should NOT be converted as it's already relative to the document... */
+            
+            /* without hack */
+            behavior: url(scripts/boxsizing.htc);
+            behavior  : url(  scripts/boxsizing.htc  );
+            
+            /* with IE<8 hack */
+            *behavior: url(scripts/boxsizing.htc);
+          }
 
-        """
+          """
         t.done()
 
     '#stripQuotes':
@@ -144,6 +194,12 @@ module.exports =
         t.strictEqual Resource::stripQuotes('bar'), 'bar'
         t.done()
 
+    '#getByteLength': (t) ->
+      t.strictEqual 3, getByteLength('☃')
+      t.strictEqual 6, getByteLength('abcdef')
+      t.strictEqual 9, getByteLength('abcdef☃')
+      t.done()
+
     '#convertPath':
       'works': (t) ->
         conversions =
@@ -151,4 +207,19 @@ module.exports =
           '../images/bar.jpg?12345': 'images/bar.jpg?12345'
         for from, to of conversions
           t.strictEqual Resource::convertPath(from, 'styles'), to
+        t.done()
+
+    '#isLocalPath':
+      'returns true for for local relative paths': (t) ->
+        t.strictEqual true, isLocalPath('images/foo.png')
+        t.done()
+      'returns false for http(s) urls': (t) ->
+        t.strictEqual false, isLocalPath('http://example.com/hi.jpg')
+        t.strictEqual false, isLocalPath('https://example.com/hi.jpg')
+        t.done()
+      'returns false for data URIs': (t) ->
+        t.strictEqual false, isLocalPath('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==')
+        t.done()
+      'returns false for domain-relative paths if 2nd arg passed': (t) ->
+        t.strictEqual false, isLocalPath('/images/foo.png', true)
         t.done()

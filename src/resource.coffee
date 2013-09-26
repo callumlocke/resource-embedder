@@ -1,10 +1,18 @@
+###
+  resource-embedder
+  https://github.com/callumlocke/resource-embedder
+
+  Copyright 2013 Callum Locke
+  Licensed under the MIT license.
+###
+
 parseFileSize = require './parse-file-size'
 fs = require 'fs'
 path = require 'path'
 
-# Awesome regex stolen from
-# https://github.com/yeoman/grunt-usemin/blob/v2.0/lib/fileprocessor.js#L38
-cssURLMatcher = /(src=|url\(\s*)['"]?([^'"\)#?]+)(?:[#?](?:[^'"\)]*))?['"]?\s*\)?/gm
+# Railroad diagram: http://goo.gl/WlkLkF
+# Tests: http://refiddle.com/by/callum-locke/css-url-matcher
+cssURLMatcher = /[;\s]\*?[a-zA-Z\-]+\s*\:\s*url\(\s*['"]?([^'"\)\s]+)['"]?\s*\)/g
 
 module.exports = class Resource
   constructor: (@tagName, @attributes, @options) ->
@@ -43,6 +51,8 @@ module.exports = class Resource
                 true
               else false
           ) ||
+          attributes.defer? ||
+          attributes.async? ||
           !Resource::isLocalPath(attributes.src)
         )
       when 'link'
@@ -92,22 +102,14 @@ module.exports = class Resource
 
   convertCSSResources: (css=@contents, cssDirName=@cssDirName) ->
     css = css.toString()
-    matches = css.match cssURLMatcher
-    if matches?
-      replacements = {}
-      for match in matches
-        switch match.substring(0,3)
-          when 'url'
-            relPath = Resource::stripQuotes match.match(/^url\(([^\)]*)\)$/)[1]
-          when 'src'
-            relPath = Resource::stripQuotes match.match(/^src=(.*)$/)[1]
-          else throw new Error 'Something wrong with the regex'
-        if Resource::isLocalPath(relPath)
-          convertedPath = Resource::convertPath(relPath, cssDirName)
-          replacements[match] = match.replace(relPath, convertedPath)
-      for own from, to of replacements
-        css = css.replace from, to, 'g'
-    return css
+    newCSS = css.replace cssURLMatcher, (match, urlValue, offset) ->
+      switch match.trim().indexOf 'behavior'
+        when 0, 1 then return match
+      if Resource::isLocalPath urlValue, true
+        convertedPath = Resource::convertPath urlValue, cssDirName
+        return match.replace urlValue, convertedPath
+      return match
+    return newCSS
 
   getByteLength: (contents=@contents) ->
     if !contents?
@@ -124,10 +126,12 @@ module.exports = class Resource
       else
         str
 
-  isLocalPath: (path) ->
+  isLocalPath: (filePath, mustBeRelative=false) ->
     (
-      path && path.length &&
-      (path.indexOf('//') == -1)
+      filePath && filePath.length &&
+      (filePath.indexOf('//') == -1) &&
+      (filePath.indexOf('data:') != 0) &&
+      (!mustBeRelative || filePath[0] != '/')
     )
 
   convertPath: (relPath, cssDirName) ->
