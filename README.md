@@ -1,14 +1,13 @@
 # resource-embedder [![Build Status](https://secure.travis-ci.org/callumlocke/resource-embedder.png?branch=master)](http://travis-ci.org/callumlocke/resource-embedder)
 
-> Not ready for production use yet! (See [issues](https://github.com/callumlocke/resource-embedder/issues).) Wait till 0.1.x.
+> Also available as a Grunt plugin: [grunt-embed](https://github.com/callumlocke/grunt-embed)
 
-Node module for automatically embedding the contents of external scripts and stylesheets into HTML markup.
+Automatically embeds the contents of external scripts and stylesheets into HTML markup.
 
 Takes an HTML file path and generates a string of modified markup. Any small external scripts and stylesheets are replaced with inline `<script>...</script>` or `<style>...</style>` elements.
 
-This reduces the number of HTTP requests in return for inflating your HTML. It's up to you to decide whether this is a good trade-off in your situation, and to configure this module optimally.
+This reduces the number of HTTP requests in return for inflating your HTML. It's up to you to decide whether this is a good trade-off in your situation.
 
-**Also available as a Grunt plugin: [grunt-embed](https://github.com/callumlocke/grunt-embed)**
 
 ## Usage
 
@@ -89,9 +88,7 @@ Copyright (c) 2013 Callum Locke. Licensed under the MIT license.
 
 ## Wishlist
 
-* Grunt plugin
 * Connect/Express middleware
-* for stylesheet `link`s with `media` attributes, the embedded CSS should be automatically wrapped in a media query.
-* ability to specify root for relative paths
-* non-blocking file reads
-* remove `data-embed` attributes from elements that don't get embedded.
+* ability to specify root for relative paths, in case different from the HTML file
+* remove `data-embed` attributes from elements that don't get embedded, so they don't litter the output markup unnecessarily
+
