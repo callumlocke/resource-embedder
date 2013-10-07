@@ -2,8 +2,8 @@ ResourceEmbedder = require '../src/resource-embedder'
 path = require 'path'
 fs = require 'fs'
 
-inputFilePath = path.resolve(path.join(__dirname, 'fixtures/input.html'))
-outputFilePath = path.resolve(path.join(__dirname, 'fixtures/expected.html'))
+inputFilePath = path.resolve(path.join(__dirname, 'fixtures/messy.html'))
+outputFilePath = path.resolve(path.join(__dirname, 'fixtures/expected/messy.html'))
 correctOutput = fs.readFileSync(outputFilePath).toString()
 
 exports['resource-embedder'] = (test) ->
@@ -13,7 +13,7 @@ exports['resource-embedder'] = (test) ->
     htmlFile: inputFilePath
 
   embedder.get (result, warnings) ->
-    fs.writeFileSync path.join(__dirname, '../test-output.html'), result
-    test.ok result is correctOutput, 'resulting markup should match output.html.'
+    fs.writeFileSync path.join(__dirname, '../test-dump.html'), result
+    test.ok result is correctOutput, 'processed markup should be as expected.'
     test.strictEqual warnings.length, 2
     test.done()

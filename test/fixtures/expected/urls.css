@@ -2,8 +2,8 @@
   font-family: 'coool';
   font-style: normal;
   font-weight: 400;
-  src: url(fonts/coool.woff) format('woff');
-  src:url("fonts/coool.eot?#iefix") format("embedded-opentype"),url("fonts/coool.woff") format("woff"),url("fonts/coool.ttf") format("truetype"),url("fonts/coool.svg#coool") format("svg")
+  src: url(styles/fonts/coool.woff) format('woff');
+  src:url("styles/fonts/coool.eot?#iefix") format("embedded-opentype"),url("styles/fonts/coool.woff") format("woff"),url("styles/fonts/coool.ttf") format("truetype"),url("styles/fonts/coool.svg#coool") format("svg")
 }
 
 .something {
@@ -13,23 +13,23 @@
     sizingMethod='scale'
   );
 
-  background-image: url('../images/foo.png');
-  background-image: url('../images/bar.png?12345');
-  background-image: url(../images/foo.png) ;
-  background-image: url( ../images/bar.png  );
+  background-image: url('images/foo.png');
+  background-image: url('images/bar.png?12345');
+  background-image: url(images/foo.png) ;
+  background-image: url( images/bar.png  );
   background-image: url(  
-    ../images/bar.png
+    images/bar.png
        )
 }
 
 .another-thing {
-  background-image: url(more-images/bar.jpg?12345);
-  background-image: url( more-images/bar.jpg?12345 );
-  background-image: url( 'more-images/bar.jpg' );
+  background-image: url(styles/more-images/bar.jpg?12345);
+  background-image: url( styles/more-images/bar.jpg?12345 );
+  background-image: url( 'styles/more-images/bar.jpg' );
   background-image: url(
-    more-images/bar.jpg   
+    styles/more-images/bar.jpg   
   );
-  background-image  : url(images/thing.jpg)  ;
+  background-image  : url(styles/images/thing.jpg)  ;
 }
 
 .other-things {

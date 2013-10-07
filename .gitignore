@@ -1,4 +1,5 @@
 node_modules
-test-output.html
+test-dump.html
+urls-dump.html
 js
 js_test

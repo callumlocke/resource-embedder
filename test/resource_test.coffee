@@ -1,4 +1,5 @@
 fs = require 'fs'
+path = require 'path'
 Resource = require '../src/resource'
 
 posOptions =
@@ -118,80 +119,13 @@ module.exports =
 
     '#convertCSSResources':
       'converts relative resources correctly': (t) ->
-        result = convertCSSResources(
+        actual = convertCSSResources(
           fs.readFileSync(__dirname + '/fixtures/styles/urls.css'),
           'styles'
         )
-        t.strictEqual result, """
-          @font-face {
-            font-family: 'coool';
-            font-style: normal;
-            font-weight: 400;
-            src: url(styles/fonts/coool.woff) format('woff');
-          }
-          
-          .something {
-            /* filter src should NOT be converted, as it's supposed to be relative to the document already */
-            filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
-              src='images/test.jpg',
-              sizingMethod='scale'
-            );
-          
-            background-image: url('images/foo.png');
-            background-image: url('images/bar.png?12345');
-            background-image: url(images/foo.png) ;
-            background-image: url( images/bar.png  );
-            background-image: url(  
-              images/bar.png
-                 );
-          }
-          
-          .another-thing {
-            background-image: url(styles/more-images/bar.jpg?12345);
-            background-image: url( styles/more-images/bar.jpg?12345 );
-            background-image: url( 'styles/more-images/bar.jpg' );
-            background-image: url(
-              styles/more-images/bar.jpg   
-            );
-            background-image  : url(styles/images/thing.jpg)  ;
-          }
-          
-          .other-things {
-            background-image: url(data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);
-            background-image: url( data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw== );
-          }
-          
-          .moar-things {
-            background-image: url(/styles/more-images/thing.jpg);
-            background-image: url(http://i.imgur.com/C5XQm.gif);
-            filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
-              src='http://example.com/images/test.jpg',
-              sizingMethod='scale'
-            );
-          }
-          
-          *, *:before, *:after {
-            box-sizing: border-box;
-            /* urls in IE's 'behavior' property should NOT be converted as it's already relative to the document... */
-            
-            /* without hack */
-            behavior: url(scripts/boxsizing.htc);
-            behavior  : url(  scripts/boxsizing.htc  );
-            
-            /* with IE<8 hack */
-            *behavior: url(scripts/boxsizing.htc);
-          }
-
-          """
-        t.done()
-
-    '#stripQuotes':
-      'works': (t) ->
-        t.strictEqual Resource::stripQuotes('"foo"'), 'foo'
-        t.strictEqual Resource::stripQuotes("'foo'"), 'foo'
-        t.done()
-      'ok with non quoted strings': (t) ->
-        t.strictEqual Resource::stripQuotes('bar'), 'bar'
+        fs.writeFileSync path.join(__dirname, '../urls-dump.css'), actual
+        expected = fs.readFileSync(__dirname + '/fixtures/expected/urls.css').toString()
+        t.strictEqual actual, expected
         t.done()
 
     '#getByteLength': (t) ->
