@@ -17,6 +17,7 @@ defaults =
   threshold: '5KB'
   stylesheets: true
   scripts: true
+  deleteEmbeddedFiles: false
 
 indentEachLine = (str, indent) ->
   lines = str.split '\n'
@@ -48,7 +49,7 @@ module.exports = class ResourceEmbedder
       finished = false
       warnings = []
 
-      doEmbedding = ->
+      doEmbedding = =>
         for own k, er of embeddableResources
           return if !er.body? || !er.elementEndIndex?
 
@@ -73,8 +74,13 @@ module.exports = class ResourceEmbedder
             indent + "</#{er.type}>"
           )
           index = er.elementEndIndex + 1
+          
+          if @options.deleteEmbeddedFiles && fs.existsSync er.path
+            fs.unlinkSync er.path
+
         outputMarkup += inputMarkup.substring index
 
+        # console.log 'EMBEDDED FILES', embeddableResources
         callback outputMarkup, (if warnings.length then warnings else null)
 
       parser = new htmlparser.Parser
