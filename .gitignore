@@ -1,5 +1,6 @@
-node_modules
-test-dump.html
-urls-dump.html
-js
-js_test
+/node_modules
+/test-dump.html
+/urls-dump.html
+/js
+/js_test
+/temp
