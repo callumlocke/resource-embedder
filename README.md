@@ -63,11 +63,13 @@ To specify options:
 * `threshold` (default: `"5KB"`) — all resources below this filesize will be embedded. NB: you can set this to `0` if you want, in which case nothing will be embedded except those resources you mark with a `data-embed` attribute (see above).
 * `stylesheets` (default: `true`) — whether to embed stylesheets.
 * `scripts` (default: `true`) — whether to embed scripts.
+* `deleteEmbeddedFiles` (default: `false`) – whether the external files should be deleted after being embedded.
 
 
 ## Contributing
 
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Test your code using [Grunt](http://gruntjs.com/).
+
 
 ### Tasks
 
