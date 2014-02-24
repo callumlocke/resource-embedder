@@ -23,9 +23,9 @@ module.exports = class Resource
         if !threshold
           callback @embed = false
         else
-          @getContentsForEmbedding (notFound) =>
+          @getContentsForEmbedding (notFound, missingFilePath) =>
             if (notFound)
-              @warning = "File does not exist: #{@fullFilePath}"
+              @warning = "File does not exist: #{missingFilePath}"
               callback @embed = false
             else
               callback @embed = (threshold > @getByteLength())
@@ -83,7 +83,7 @@ module.exports = class Resource
     @fullFilePath = path.resolve(path.join(@options.assetRoot, relFilePath))
     fs.exists @fullFilePath, (exists) =>
       if !exists
-        callback(true) # true means error (file not found)
+        callback(true, @fullFilePath) # true means error (file not found)
       else
         fs.readFile @fullFilePath, (err, @contents) =>
           throw err if err
