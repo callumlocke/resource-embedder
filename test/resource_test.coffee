@@ -41,7 +41,7 @@ module.exports =
             'link', {rel: 'stylesheet', href:'file.css', media: 'print'}, posOptions
           )
           t.strictEqual true, potentiallyEmbeddable(
-            'link', {rel: 'stylesheet', href:'file.css', media: 'all', href:'file.css'}, posOptions
+            'link', {rel: 'stylesheet', href:'file.css', media: 'all'}, posOptions
           )
           t.strictEqual true, potentiallyEmbeddable(
             'link', {rel: 'stylesheet', href:'file.css', media: ''}, posOptions
@@ -115,17 +115,6 @@ module.exports =
       'data-embed attr takes precedence over options': (t) ->
         t.strictEqual 2048, getThreshold('2kb', {threshold: '1kb'})
         t.strictEqual Infinity, getThreshold('', {threshold: '10kb'})
-        t.done()
-
-    '#convertCSSResources':
-      'converts relative resources correctly': (t) ->
-        actual = convertCSSResources(
-          fs.readFileSync(__dirname + '/fixtures/styles/urls.css'),
-          'styles'
-        )
-        fs.writeFileSync path.join(__dirname, '../urls-dump.css'), actual
-        expected = fs.readFileSync(__dirname + '/fixtures/expected/urls.css').toString()
-        t.strictEqual actual, expected
         t.done()
 
     '#getByteLength': (t) ->

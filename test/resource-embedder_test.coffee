@@ -8,15 +8,18 @@ wrench = require 'wrench'
 #   forceDelete: true
 
 inputFilePath = path.resolve(path.join(__dirname, '../temp/messy.html'))
-outputFilePath = path.resolve(path.join(__dirname, '../temp/expected/messy.html'))
+expectedFilePath = path.resolve(path.join(__dirname, '../temp/expected/messy.html'))
 
 exports['resource-embedder'] = (test) ->
   test.expect 3
   
-  wrench.copyDirSyncRecursive path.join(__dirname, 'fixtures'), path.join(__dirname, '../temp'),
-  forceDelete: true
-  correctOutput = fs.readFileSync(outputFilePath).toString()
+  wrench.copyDirSyncRecursive(
+    path.join(__dirname, 'fixtures'),
+    path.join(__dirname, '../temp'),
+    {forceDelete: true}
+  )
 
+  correctOutput = fs.readFileSync(expectedFilePath).toString()
 
   embedder = new ResourceEmbedder
     htmlFile: inputFilePath
@@ -25,7 +28,7 @@ exports['resource-embedder'] = (test) ->
   embedder.get (result, warnings) ->
     fs.writeFileSync path.join(__dirname, '../test-dump.html'), result
 
-    test.ok result is correctOutput, 'processed markup should be as expected.'
+    test.ok (result is correctOutput), 'processed markup should be as expected.'
 
     test.strictEqual warnings.length, 2
 

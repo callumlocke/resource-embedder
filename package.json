@@ -30,9 +30,10 @@
     "wrench": "~1.5.4"
   },
   "dependencies": {
-    "coffee-script": "~1.6.3",
-    "htmlparser2": "~3.3.0",
-    "graceful-fs": "~2.0.1",
-    "lodash": "~1.3.1"
+    "coffee-script": "~1.7.1",
+    "htmlparser2": "~3.5.0",
+    "graceful-fs": "~2.0.2",
+    "lodash": "~2.4.1",
+    "reorient-css": "0.0.1"
   }
 }

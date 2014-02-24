@@ -1,6 +1,7 @@
 ###
   resource-embedder
   https://github.com/callumlocke/resource-embedder
+
   Copyright 2013 Callum Locke
   Licensed under the MIT license.
 ###
@@ -33,6 +34,7 @@ module.exports = class ResourceEmbedder
     
     # Build options
     @options = assign {}, defaults, _options
+    @options.htmlFile = path.resolve @options.htmlFile
     if not @options.assetRoot
       @options.assetRoot = path.dirname(@options.htmlFile) unless @options.assetRoot?
     @options.assetRoot = path.resolve @options.assetRoot
@@ -80,7 +82,6 @@ module.exports = class ResourceEmbedder
 
         outputMarkup += inputMarkup.substring index
 
-        # console.log 'EMBEDDED FILES', embeddableResources
         callback outputMarkup, (if warnings.length then warnings else null)
 
       parser = new htmlparser.Parser

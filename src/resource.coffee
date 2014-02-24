@@ -1,24 +1,15 @@
 ###
   resource-embedder
   https://github.com/callumlocke/resource-embedder
+
   Copyright 2013 Callum Locke
-  Licensed under the MIT license.
+  Licensed under the MIT license
 ###
 
 parseFileSize = require './parse-file-size'
 fs = require 'fs'
 path = require 'path'
-
-# Regex to find CSS properties that contain URLs
-# Fiddle: http://refiddle.com/by/callum-locke/css-url-matcher
-# Railroad: http://goo.gl/LXpk52
-propertyMatcher = /[;\s]\*?[a-zA-Z\-]+\s*\:\s*url\(\s*['"]?[^'"\)\s]+['"]?\s*\)[^;}]*/g
-
-# Regex to find the URLs within a CSS property value
-# Fiddle: http://refiddle.com/by/callum-locke/match-multiple-urls-within-a-css-property-value
-# Railroad: http://goo.gl/vQzMcg
-urlMatcher = /url\(\s*['"]?([^)'"]+)['"]?\s*\)/g
-
+reorientCSS = require 'reorient-css'
 
 module.exports = class Resource
   constructor: (@tagName, @attributes, @options) ->
@@ -80,17 +71,13 @@ module.exports = class Resource
 
   getThreshold: (embedAttr = @attributes?['data-embed'], options=@options) ->
     switch embedAttr
-      when 'false', '0'
-        0
-      when null, undefined
-        parseFileSize options.threshold
-      when ''
-        Infinity
-      else
-        parseFileSize embedAttr
+      when 'false', '0' then 0
+      when null, undefined then parseFileSize options.threshold
+      when '' then Infinity
+      else parseFileSize embedAttr
 
   getContentsForEmbedding: (callback) ->
-    # Returns the contents of the file, but trimmed, and run through convertCSSResources
+    # Returns the contents of the file, but trimmed, and run through reorient-css
     # (if CSS).
     relFilePath = (if @tagName is 'script' then @attributes.src else @attributes.href)
     @fullFilePath = path.resolve(path.join(@options.assetRoot, relFilePath))
@@ -102,23 +89,9 @@ module.exports = class Resource
           throw err if err
           if @tagName is 'link'
             @cssDirName = path.dirname @attributes.href
-            @contents = @convertCSSResources()
+            @contents = reorientCSS(@contents.toString(), @fullFilePath, @options.htmlFile)
           @contents = @contents.toString().trim()
           callback()
-
-# Regex to find CSS properties that contain URLs
-  convertCSSResources: (css=@contents, cssDirName=@cssDirName) ->
-    css = css.toString()
-    newCSS = css.replace propertyMatcher, (property, urlValue, offset) ->
-      # Regex to find URLs within a CSS property value
-      switch property.trim().indexOf 'behavior'
-        when 0, 1 then return property
-      return property.replace urlMatcher, (urlFunc, justURL, offset) ->
-        if Resource::isLocalPath(justURL, true)
-          convertedPath = Resource::convertPath(justURL, cssDirName)
-          return urlFunc.replace justURL, convertedPath
-        return urlFunc
-    return newCSS
 
   getByteLength: (contents=@contents) ->
     if !contents?
