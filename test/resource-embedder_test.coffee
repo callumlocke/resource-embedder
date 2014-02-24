@@ -28,6 +28,10 @@ exports['resource-embedder'] = (test) ->
   embedder.get (result, warnings) ->
     fs.writeFileSync path.join(__dirname, '../test-dump.html'), result
 
+    if (result isnt correctOutput)
+      console.log '\nEXPECTED:\n', correctOutput
+      console.log '\nGOT:\n', result
+
     test.ok (result is correctOutput), 'processed markup should be as expected.'
 
     test.strictEqual warnings.length, 2
