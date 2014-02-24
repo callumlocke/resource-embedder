@@ -34,6 +34,6 @@
     "htmlparser2": "~3.5.0",
     "graceful-fs": "~2.0.2",
     "lodash": "~2.4.1",
-    "reorient-css": "0.0.1"
+    "reorient-css": "~0.1.1"
   }
 }
