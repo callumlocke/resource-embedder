@@ -92,8 +92,8 @@ module.exports = class Resource
             @contents = reorientCSS(
               @contents.toString(),
               @fullFilePath
-              @options
-            )
+              @options.htmlFile
+            ).css
           @contents = @contents.toString().trim()
           callback()
 
