@@ -11,8 +11,6 @@ fs = require 'fs'
 path = require 'path'
 reorientCSS = require 'reorient-css'
 
-backslashesRegex = /\\/g
-
 module.exports = class Resource
   constructor: (@tagName, @attributes, @options) ->
 
@@ -93,8 +91,8 @@ module.exports = class Resource
             @cssDirName = path.dirname @attributes.href
             @contents = reorientCSS(
               @contents.toString(),
-              @fullFilePath.replace(backslashesRegex, '/'),
-              @options.htmlFile.replace(backslashesRegex, '/')
+              @fullFilePath
+              @options
             )
           @contents = @contents.toString().trim()
           callback()
