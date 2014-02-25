@@ -123,15 +123,6 @@ module.exports =
       t.strictEqual 9, getByteLength('abcdef☃')
       t.done()
 
-    '#convertPath':
-      'works': (t) ->
-        conversions =
-          'images/bar.jpg?12345': 'styles/images/bar.jpg?12345'
-          '../images/bar.jpg?12345': 'images/bar.jpg?12345'
-        for from, to of conversions
-          t.strictEqual Resource::convertPath(from, 'styles'), to
-        t.done()
-
     '#isLocalPath':
       'returns true for for local relative paths': (t) ->
         t.strictEqual true, isLocalPath('images/foo.png')

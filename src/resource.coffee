@@ -114,6 +114,3 @@ module.exports = class Resource
       (filePath.indexOf('data:') != 0) &&
       (!mustBeRelative || filePath[0] != '/')
     )
-
-  convertPath: (relPath, cssDirName) ->
-    path.normalize(path.join(cssDirName, relPath))
