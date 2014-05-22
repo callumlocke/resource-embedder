@@ -19,7 +19,7 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "grunt nodeunit --stack"
+    "test": "grunt nodeunit:all --stack"
   },
   "devDependencies": {
     "grunt-contrib-nodeunit": "~0.2.0",
