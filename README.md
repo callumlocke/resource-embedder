@@ -1,4 +1,6 @@
-# resource-embedder [![Build Status](https://secure.travis-ci.org/callumlocke/resource-embedder.png?branch=master)](http://travis-ci.org/callumlocke/resource-embedder)
+# resource-embedder
+
+[![Build Status](https://secure.travis-ci.org/callumlocke/resource-embedder.png?branch=master)](http://travis-ci.org/callumlocke/resource-embedder) [![Dependency Status](https://david-dm.org/callumlocke/resource-embedder.svg)](https://david-dm.org/callumlocke/resource-embedder)
 
 > Also available as a Grunt plugin: [grunt-embed](https://github.com/callumlocke/grunt-embed)
 
